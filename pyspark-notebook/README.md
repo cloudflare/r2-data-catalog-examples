@@ -1,29 +1,27 @@
 # R2 Data Catalog PySpark Notebook Demo
 
-In this example, we'll get you set up with a PySpark Notebook using [Marimo](https://marimo.io/) (it's like a Jupyter notebook, but sexier).
+In this example, we'll get you set up with a PySpark notebook using [Marimo](https://marimo.io/) (it's like a Jupyter notebook, but sexier).
 
 For an interactive demo using this setup (and to learn more about R2 Data Catalog), check out our [Dev Week 2025 Day 4 recording](https://cloudflare.tv/shows/developer-week/developer-week-day-4-delivering-data-at-global-scale/jvPzRkZz) on Cloudflare TV.
 
 ![alt text](marimo-screenshot.png)
 
-To get started, we recommend you use a Python [virtual environment](https://docs.python.org/3/library/venv.html) (venv), so that you isolate the packages installed to that environment. It won't globally install in your machine.
+To get started, we recommend you use a Python [virtual environment](https://docs.python.org/3/library/venv.html) (venv), so that you isolate the packages installed to that environment.
 
-We also have an example Marimo notebook which is already set up with some sample queries at `example-r2-catalog-notebook.py`. You can checkout this repository and start up the notebook with Marimo.
-
-But we also describe each step in case you want to follow along by yourself.
+We have an example notebook which is already set up with some sample queries at `example-r2-catalog-notebook.py`. You can checkout this repository and start up the notebook (after you have installed the dependencies). We also describe each step in case you want to follow along by yourself.
 
 ## Get Stared with R2 Data Catalog
 
-You'll need two things from Cloudflare to run this demo:
+You'll need to do two things to run this demo:
 
-1. A R2 Bucket with a Data Catalog Enabled
-2. A Cloudflare API Token with R2 Catalog permissions
+1. Set up an R2 Bucket with a Data Catalog Enabled
+2. Create a Cloudflare API Token with R2 Catalog permissions
 
-Follow steps 1-3 in the ["Getting Started" Guide](https://developers.cloudflare.com/r2/data-catalog/get-started/). Be sure to save the bearer token, warehouse name, and catalog URI since you'll need those to get connected from the notebook.
+Steps 1-3 in the ["Getting Started" Guide](https://developers.cloudflare.com/r2/data-catalog/get-started/) can walk you through this setup. Be sure to save the bearer token, warehouse name, and catalog URI since you'll need those to connect from the notebook.
 
-_NOTE: Our getting started guide suggests using "uv" as a Python dependency manager. However, in this demo, we will only use `pip` and `venv`._
+_NOTE: Our getting started guide suggests using "uv" as a Python dependency manager. However, in this demo, we will only use `pip` and `venv`. But feel free to use it if you'd like._
 
-## Setup PySpark with Marimo
+## Setup PySpark
 
 The following steps will walk you through installing dependencies, and starting up a Marimo notebook.
 
@@ -34,7 +32,7 @@ python3 -m venv r2-data-catalog-env
 source r2-data-catalog-env/bin/activate
 ```
 
-**Step 2: Install Marimo Notebook**
+**Step 2: Install Marimo**
 
 ```shell
 pip install marimo
@@ -42,7 +40,7 @@ pip install marimo
 
 **Step 3: Install dependencies**
 
-These are the dependencies you'll use in the Notebook.
+These are the dependencies you'll use in the notebook.
 
 ```shell
 pip install pyspark==3.5.1
@@ -53,7 +51,7 @@ pip install setuptools
 
 **Step 4: Add your Token to an .env file**
 
-You could add the token directly to the Notebook if you'd like. But it's a good practice to keep these variables (especially the cloudflare API token!) in this `.env` to reduce the liklihood of accidentially sharing or revealing secrets.
+You could add the token directly to the notebook if you'd like. But it's a good practice to keep these variables (especially the cloudflare API token!) in this `.env` to reduce the liklihood of accidentially sharing or revealing secrets.
 
 Copy and paste the following block into your shell to create an `.env` file.
 
@@ -65,7 +63,7 @@ CATALOG_URI=<my_catalog_uri>
 EOL
 ```
 
-You also need to setup a pyspark.toml to let Marimo know about the .env file.
+You also need to setup a pyspark.toml so that your notebook environment will read the .env file.
 
 ```shell
 cat > pyproject.toml <<EOL
@@ -74,22 +72,21 @@ dotenv = [".env"]
 EOL
 ```
 
-**Step 5: Run Marimo**
+**Step 5: Run the notebook**
 
 ```shell
 marimo edit my-r2-data-catalog.py
 ```
 
-## Connect your Notebook to R2 Data Catalog
+## Connect your notebook to R2 Data Catalog
 
-
-The following is an example set of configuration you can use to get connected to your R2 Data Catalog via the notebook. These code samples walk through setting up the Notebook, but if you want to jump in, just open the notebook bundled with this repo.
+The following is an example set of configuration you can use to get connected to your R2 Data Catalog via the notebook. These code samples walk through setting up the notebook, but if you want to jump in, just open the notebook bundled with this repo.
 
 ```shell
 marimo edit example-r2-catalog-notebook.py
 ```
 
-Other wise, if you want to start from an empty Notebook, you can name it anything you want.
+Otherwise, if you want to start from an empty notebook, create one with any name you would like.
 
 ```shell
 marimo edit my-awesome-r2-catalog-notebook.py
@@ -112,8 +109,8 @@ namespace = "testnamespace"
 table = "test_table"
 
 # Setup the Spark Session
-# NOTE: You may see some red output while running this command, but this isn't an error message. It's just
-# Pyspark automatically setting up the JARs for Spark.
+# NOTE: You may see some red output while running this command, but this isn't an error message.
+# It's just Pyspark automatically setting up the JARs for Spark.
 spark = SparkSession.builder \
     .appName("R2CatalogDemo") \
     .config("spark.jars.packages", "org.apache.iceberg:iceberg-spark-runtime-3.5_2.12:1.6.1,org.apache.iceberg:iceberg-aws-bundle:1.6.1") \
@@ -172,9 +169,9 @@ spark.sql(f"SELECT id,name FROM {namespace}.{table} WHERE num < 0.0").toPandas()
 
 **Step 5: Have fun!**
 
-Now you have a Notebook that is connected to your R2 Data Catalog, go forth and do big data things.
+Now you have a notebook that is connected to your R2 Data Catalog, go forth and do big data things.
 
-If you'd like to load a larger data set for more complex queries, try out the [New York City Taxi Dataset](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page).
+If you'd like to load a larger data set for more complex queries, try out the [New York City Taxi Dataset](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page). Download some of those files, and load them up into your Catalog.
 
 You can load Parquet files and write them to Iceberg in just a few lines of code:
 ```python
